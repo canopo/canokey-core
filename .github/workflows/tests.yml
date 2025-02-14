@@ -1,8 +1,8 @@
 name: tests
 on: [push, pull_request, workflow_dispatch]
 jobs:
-  build_opensc:
-    name: Build opensc package
+  build_tools:
+    name: Build custom yubico-piv-tool package
     #if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
@@ -12,36 +12,20 @@ jobs:
         cache-name: tools-deb
       with:
         path: |
-          opensc*.deb
           yubico-piv-tool*.deb
         key: ${{ runner.os }}-${{ env.cache-name }}
-    - name: Check file existence
-      id: check_opensc
-      uses: andstor/file-existence-action@v1
-      with:
-        files: "opensc*.deb"
     - name: Check file existence
       id: check_yubico_piv
       uses: andstor/file-existence-action@v1
       with:
         files: "yubico-piv-tool*.deb"
     - name: Package Install
-      if: steps.check_opensc.outputs.files_exists == 'false' || steps.check_yubico_piv.outputs.files_exists == 'false'
+      if: steps.check_yubico_piv.outputs.files_exists == 'false'
       run: |
         sudo sed -i 's/^# deb-src/deb-src/' /etc/apt/sources.list  
         sudo apt-get update
         sudo apt-get install -q -y libeac-dev curl git gcc g++ cmake swig psmisc procps debian-keyring devscripts libpcsclite-dev check gengetopt help2man openssl zlib1g-dev
-        sudo apt-get build-dep -q -y opensc
         sudo rm -f /usr/bin/clang-tidy
-    - name: Build opensc package
-      if: steps.check_opensc.outputs.files_exists == 'false'
-      run: |
-        dget -u http://archive.ubuntu.com/ubuntu/pool/universe/o/opensc/opensc_0.25.0~rc1-1build2.dsc
-        ls -l
-        cd 'opensc-0.25.0~rc1'
-        #curl https://github.com/OpenSC/OpenSC/commit/a0aef25c7f2ce0ec2c7e1014f959f0fe86ff0479.diff | patch -p1
-        dch --local ppa~jammy --distribution jammy "Apply a patch. Backports to Jammy."
-        DEB_BUILD_OPTIONS='parallel=2' debuild --no-sign -b
     - name: Build yubico-piv-tool package
       if: steps.check_yubico_piv.outputs.files_exists == 'false'
       run: |
@@ -62,7 +46,6 @@ jobs:
       with:
         name: tools-deb
         path: |
-          opensc*.deb
           yubico-piv-tool*.deb
 
 
@@ -70,19 +53,19 @@ jobs:
   build_test:
     name: Build and Test
     runs-on: ubuntu-latest
-    needs: build_opensc
+    needs: build_tools
     steps:
-    - name: Download backport OpenSC package
+    - name: Download packages
       uses: actions/download-artifact@v4
       with:
         name: tools-deb
 
     - name: Package Install
       run: |
-        sudo apt-add-repository ppa:yubico/stable
-        sudo apt-get update
-        sudo apt-get install -q -y libeac3 git gcc g++ cmake swig psmisc procps pcscd pcsc-tools libhidapi-dev libassuan-dev libgcrypt20-dev libksba-dev libnpth0-dev libssl3 zlib1g libglib2.0-0 openssl openssh-server libpcsclite-dev libudev-dev libcmocka-dev python3-pip python3-setuptools python3-wheel lcov yubikey-manager libcbor-dev
-        sudo dpkg -i opensc*.deb yubico-piv-tool*.deb
+        # sudo apt-add-repository ppa:yubico/stable
+        # sudo apt-get update
+        sudo apt-get install -q -y opensc libeac3 git gcc g++ cmake swig psmisc procps pcscd pcsc-tools libhidapi-dev libassuan-dev libgcrypt20-dev libksba-dev libnpth0-dev libssl3 zlib1g libglib2.0-0 openssl openssh-server libpcsclite-dev libudev-dev libcmocka-dev python3-pip python3-setuptools python3-wheel lcov yubikey-manager libcbor-dev
+        sudo dpkg -i yubico-piv-tool*.deb
         pip3 install --upgrade pip
 
     - name: Set up Go 1.16
