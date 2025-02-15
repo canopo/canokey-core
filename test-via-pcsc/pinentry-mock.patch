@@ -1,10 +1,10 @@
---- A/pinentry-1.1.0/tty/pinentry-tty.c	2017-12-04 00:13:05.000000000 +0800
-+++ B/pinentry-1.1.0/tty/pinentry-tty.c	2019-10-01 15:20:29.948849147 +0800
-@@ -300,6 +300,39 @@
+--- a/tty/pinentry-tty.c
++++ b/tty/pinentry-tty.c
+@@ -330,6 +330,38 @@ confirm (pinentry_t pinentry, FILE *ttyfi, FILE *ttyfo)
  }
  
  static char *
-+read_password_mock (const char *prompt, FILE *ttyfo)
++read_password_mock (pinentry_t pinentry, FILE *ttyfi, FILE *ttyfo)
 +{
 +  long len;
 +  char *buffer;
@@ -36,31 +36,30 @@
 +  return buffer;
 +}
 +
-+static char *
- read_password (FILE *ttyfi, FILE *ttyfo)
+ read_password (pinentry_t pinentry, FILE *ttyfi, FILE *ttyfo)
  {
    int done = 0;
-@@ -411,7 +444,7 @@
+@@ -428,7 +460,7 @@ password (pinentry_t pinentry, FILE *ttyfi, FILE *ttyfo)
  		|| prompt[strlen(prompt) - 1] == '?') ? "" : ":");
        fflush (ttyfo);
  
--      passphrase = read_password (ttyfi, ttyfo);
-+      passphrase = read_password_mock (prompt, ttyfo);
+-      passphrase = read_password (pinentry, ttyfi, ttyfo);
++      passphrase = read_password_mock (pinentry, ttyfi, ttyfo);
        fputc ('\n', ttyfo);
        if (! passphrase)
  	{
-@@ -433,7 +466,7 @@
+@@ -450,7 +482,7 @@ password (pinentry_t pinentry, FILE *ttyfi, FILE *ttyfo)
  		    || prompt[strlen(prompt) - 1] == '?') ? "" : ":");
  	  fflush (ttyfo);
  
--	  passphrase2 = read_password (ttyfi, ttyfo);
-+	  passphrase2 = read_password_mock (prompt, ttyfo);
+-	  passphrase2 = read_password (pinentry, ttyfi, ttyfo);
++	  passphrase2 = read_password_mock (pinentry, ttyfi, ttyfo);
  	  fputc ('\n', ttyfo);
  	  if (! passphrase2)
  	    {
-@@ -509,6 +542,9 @@
-   FILE *ttyfi = stdin;
+@@ -527,6 +559,9 @@ tty_cmd_handler (pinentry_t pinentry)
    FILE *ttyfo = stdout;
+   int saved_errno = 0;
  
 +  pinentry->ttyname = NULL;
 +  ttyfo = fopen("/tmp/debug-pin.log","w");
@@ -68,12 +67,12 @@
  #ifndef HAVE_DOSISH_SYSTEM
    timed_out = 0;
  
-@@ -546,7 +582,7 @@
-       if (pinentry->pin)
- 	rc = password (pinentry, ttyfi, ttyfo);
-       else
--	rc = confirm (pinentry, ttyfi, ttyfo);
-+	rc = 1;//confirm (pinentry, ttyfi, ttyfo);
-     }
+@@ -573,7 +608,7 @@ tty_cmd_handler (pinentry_t pinentry)
+           if (pinentry->pin)
+             rc = password (pinentry, ttyfi, ttyfo);
+           else
+-            rc = confirm (pinentry, ttyfi, ttyfo);
++            rc = 1; //confirm (pinentry, ttyfi, ttyfo);
  
-   do_touch_file (pinentry);
+           terminal_restore (fileno (ttyfi));
+           do_touch_file (pinentry);
