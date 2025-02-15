@@ -1,7 +1,11 @@
 #!/bin/bash
 set -e
-mkdir ~/.gnupg || true
+mkdir -m 700 ~/.gnupg || true
 echo "pinentry-program /usr/local/bin/pinentry-tty" >~/.gnupg/gpg-agent.conf
+cat >~/.gnupg/scdaemon.conf <<EOF
+pcsc-driver /usr/lib/x86_64-linux-gnu/libpcsclite.so.1
+disable-ccid
+EOF
 
 sudo tee /etc/apt/sources.list <<EOF
 deb http://archive.ubuntu.com/ubuntu/ noble main restricted universe multiverse
@@ -31,5 +35,7 @@ else
 fi
 sudo make install
 popd
+
+gpgconf --list-components
 
 popd
