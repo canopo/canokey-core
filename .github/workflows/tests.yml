@@ -153,7 +153,7 @@ jobs:
         sudo killall -9 pcscd || true
         sudo cp build/libu2f-virt-card.so /usr/local/lib/
         sudo cp test-via-pcsc/pcscd-reader.conf /etc/reader.conf.d/
-        bash -c 'sudo LD_PRELOAD="$(gcc -print-file-name=libasan.so) $(gcc -print-file-name=libubsan.so)" pcscd -a -f >/tmp/pcscd.log &'
+        bash -c 'sudo LD_PRELOAD="$(gcc -print-file-name=libasan.so) $(gcc -print-file-name=libubsan.so)" pcscd --disable-polkit -a -f >/tmp/pcscd.log &'
         sleep 15 # wait for admin applet reset
         timeout 1s pcsc_scan || true
         go env -w GO111MODULE=on
