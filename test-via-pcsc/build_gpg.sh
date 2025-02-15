@@ -3,7 +3,7 @@ set -e
 mkdir ~/.gnupg || true
 echo "pinentry-program /usr/local/bin/pinentry-tty" >~/.gnupg/gpg-agent.conf
 
-cat > /etc/apt/sources.list <<EOF
+sudo tee /etc/apt/sources.list <<EOF
 deb http://archive.ubuntu.com/ubuntu/ noble main restricted universe multiverse
 deb-src http://archive.ubuntu.com/ubuntu/ noble main restricted universe multiverse
 
