@@ -3,9 +3,15 @@ set -e
 mkdir ~/.gnupg || true
 echo "pinentry-program /usr/local/bin/pinentry-tty" >~/.gnupg/gpg-agent.conf
 
+cat > /etc/apt/sources.list <<EOF
+deb http://archive.ubuntu.com/ubuntu/ noble main restricted universe multiverse
+deb-src http://archive.ubuntu.com/ubuntu/ noble main restricted universe multiverse
 
+deb http://archive.ubuntu.com/ubuntu/ noble-updates main restricted universe multiverse
+deb-src http://archive.ubuntu.com/ubuntu/ noble-updates main restricted universe multiverse
 
-sudo sed -i 's/^# deb-src/deb-src/' /etc/apt/sources.list  
+EOF
+ 
 sudo apt-get update
 sudo apt-get build-dep -q -y pinentry-tty
 
