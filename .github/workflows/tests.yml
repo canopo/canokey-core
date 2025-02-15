@@ -136,6 +136,7 @@ jobs:
         UsePAM no
         Port 2200
         EOF
+        sudo mkdir -p /run/sshd
         sudo /usr/sbin/sshd -f /tmp/sshd_config
 
     - name: Smoking Tests
