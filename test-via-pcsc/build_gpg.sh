@@ -18,7 +18,7 @@ sudo apt-get build-dep -q -y pinentry-tty
 mkdir gnupg || true
 pushd gnupg
 
-if [ ! -d pinentry-1.2.1];then
+if [ ! -d pinentry-1.2.1 ];then
     wget https://gnupg.org/ftp/gcrypt/pinentry/pinentry-1.2.1.tar.bz2
     tar -xf pinentry-1.2.1.tar.bz2
 
