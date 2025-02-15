@@ -1,14 +1,16 @@
 --- a/tty/pinentry-tty.c
 +++ b/tty/pinentry-tty.c
-@@ -330,6 +330,38 @@ confirm (pinentry_t pinentry, FILE *ttyfi, FILE *ttyfo)
+@@ -329,6 +329,40 @@ confirm (pinentry_t pinentry, FILE *ttyfi, FILE *ttyfo)
+   return ret;
  }
  
- static char *
++static char *
 +read_password_mock (pinentry_t pinentry, FILE *ttyfi, FILE *ttyfo)
 +{
 +  long len;
 +  char *buffer;
 +  char filename[256];
++  char *prompt = pinentry->prompt;
 +
 +  snprintf(filename, sizeof(filename), "/tmp/mock/%s", prompt);
 +  FILE *f = fopen(filename, "r");
@@ -36,10 +38,10 @@
 +  return buffer;
 +}
 +
+ static char *
  read_password (pinentry_t pinentry, FILE *ttyfi, FILE *ttyfo)
  {
-   int done = 0;
-@@ -428,7 +460,7 @@ password (pinentry_t pinentry, FILE *ttyfi, FILE *ttyfo)
+@@ -428,7 +462,7 @@ password (pinentry_t pinentry, FILE *ttyfi, FILE *ttyfo)
  		|| prompt[strlen(prompt) - 1] == '?') ? "" : ":");
        fflush (ttyfo);
  
@@ -48,7 +50,7 @@
        fputc ('\n', ttyfo);
        if (! passphrase)
  	{
-@@ -450,7 +482,7 @@ password (pinentry_t pinentry, FILE *ttyfi, FILE *ttyfo)
+@@ -450,7 +484,7 @@ password (pinentry_t pinentry, FILE *ttyfi, FILE *ttyfo)
  		    || prompt[strlen(prompt) - 1] == '?') ? "" : ":");
  	  fflush (ttyfo);
  
@@ -57,7 +59,7 @@
  	  fputc ('\n', ttyfo);
  	  if (! passphrase2)
  	    {
-@@ -527,6 +559,9 @@ tty_cmd_handler (pinentry_t pinentry)
+@@ -527,6 +561,9 @@ tty_cmd_handler (pinentry_t pinentry)
    FILE *ttyfo = stdout;
    int saved_errno = 0;
  
@@ -67,7 +69,7 @@
  #ifndef HAVE_DOSISH_SYSTEM
    timed_out = 0;
  
-@@ -573,7 +608,7 @@ tty_cmd_handler (pinentry_t pinentry)
+@@ -573,7 +610,7 @@ tty_cmd_handler (pinentry_t pinentry)
            if (pinentry->pin)
              rc = password (pinentry, ttyfi, ttyfo);
            else
