@@ -13,8 +13,10 @@ deb-src http://archive.ubuntu.com/ubuntu/ noble main restricted universe multive
 
 deb http://archive.ubuntu.com/ubuntu/ noble-updates main restricted universe multiverse
 deb-src http://archive.ubuntu.com/ubuntu/ noble-updates main restricted universe multiverse
-
 EOF
+
+gpg-connect-agent reloadagent /bye
+gpgconf --list-components
  
 sudo apt-get update
 sudo apt-get build-dep -q -y pinentry-tty
@@ -36,6 +38,6 @@ fi
 sudo make install
 popd
 
-gpgconf --list-components
+
 
 popd
