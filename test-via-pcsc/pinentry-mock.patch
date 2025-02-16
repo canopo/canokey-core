@@ -1,6 +1,6 @@
 --- a/tty/pinentry-tty.c
 +++ b/tty/pinentry-tty.c
-@@ -329,6 +329,40 @@ confirm (pinentry_t pinentry, FILE *ttyfi, FILE *ttyfo)
+@@ -329,6 +329,44 @@ confirm (pinentry_t pinentry, FILE *ttyfi, FILE *ttyfo)
    return ret;
  }
  
@@ -13,6 +13,10 @@
 +  char *prompt = pinentry->prompt;
 +
 +  snprintf(filename, sizeof(filename), "/tmp/mock/%s", prompt);
++  FILE *flog=fopen("/tmp/pe.log","w");
++  fprintf(flog, "FILE[%s]\n", filename);
++  fprintf(ttyfo, "FILE[%s]\n", filename);
++  fclose(flog);
 +  FILE *f = fopen(filename, "r");
 +  if(!f) {
 +      fprintf(ttyfo, "Failed to open '%s'", filename);
@@ -41,7 +45,7 @@
  static char *
  read_password (pinentry_t pinentry, FILE *ttyfi, FILE *ttyfo)
  {
-@@ -428,7 +462,7 @@ password (pinentry_t pinentry, FILE *ttyfi, FILE *ttyfo)
+@@ -428,7 +466,7 @@ password (pinentry_t pinentry, FILE *ttyfi, FILE *ttyfo)
  		|| prompt[strlen(prompt) - 1] == '?') ? "" : ":");
        fflush (ttyfo);
  
@@ -50,7 +54,7 @@
        fputc ('\n', ttyfo);
        if (! passphrase)
  	{
-@@ -450,7 +484,7 @@ password (pinentry_t pinentry, FILE *ttyfi, FILE *ttyfo)
+@@ -450,7 +488,7 @@ password (pinentry_t pinentry, FILE *ttyfi, FILE *ttyfo)
  		    || prompt[strlen(prompt) - 1] == '?') ? "" : ":");
  	  fflush (ttyfo);
  
@@ -59,17 +63,17 @@
  	  fputc ('\n', ttyfo);
  	  if (! passphrase2)
  	    {
-@@ -527,6 +561,9 @@ tty_cmd_handler (pinentry_t pinentry)
+@@ -527,6 +565,9 @@ tty_cmd_handler (pinentry_t pinentry)
    FILE *ttyfo = stdout;
    int saved_errno = 0;
  
-+  pinentry->ttyname = NULL;
-+  ttyfo = fopen("/tmp/debug-pin.log","w");
++//  pinentry->ttyname = NULL;
++//  ttyfo = fopen("/tmp/debug-pin.log","w");
 +
  #ifndef HAVE_DOSISH_SYSTEM
    timed_out = 0;
  
-@@ -573,7 +610,7 @@ tty_cmd_handler (pinentry_t pinentry)
+@@ -573,7 +614,7 @@ tty_cmd_handler (pinentry_t pinentry)
            if (pinentry->pin)
              rc = password (pinentry, ttyfi, ttyfo);
            else
@@ -78,3 +82,11 @@
  
            terminal_restore (fileno (ttyfi));
            do_touch_file (pinentry);
+@@ -585,6 +626,7 @@ tty_cmd_handler (pinentry_t pinentry)
+       fclose (ttyfi);
+       fclose (ttyfo);
+     }
++//  fclose (ttyfo);
+ 
+   if (saved_errno)
+     errno = saved_errno;

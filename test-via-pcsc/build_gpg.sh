@@ -27,7 +27,7 @@ if [ ! -d pinentry-1.2.1 ];then
     tar -xf pinentry-1.2.1.tar.bz2
 
     pushd pinentry-1.2.1
-    patch -p1 <../../test-via-pcsc/pinentry-mock.patch
+    patch -p1 < ../../test-via-pcsc/pinentry-mock.patch
     ./configure --disable-pinentry-qt --enable-pinentry-tty --disable-pinentry-curses --disable-pinentry-gtk2
     make -j2
 else
