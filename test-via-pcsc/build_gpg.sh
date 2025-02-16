@@ -38,6 +38,6 @@ fi
 sudo make install
 popd
 
-ln -sf  /usr/local/bin/pinentry-tty  /usr/bin/pinentry
+sudo ln -sf  /usr/local/bin/pinentry-tty  /usr/bin/pinentry
 
 popd
