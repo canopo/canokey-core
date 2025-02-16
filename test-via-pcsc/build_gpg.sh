@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 mkdir -m 700 ~/.gnupg || true
-echo "pinentry-program /usr/local/bin/pinentry-tty" >~/.gnupg/gpg-agent.conf
+echo -e 'pinentry-program /usr/local/bin/pinentry-tty\ndebug-pinentry\ndebug 1024\nlog-file /tmp/agent.log\n' >~/.gnupg/gpg-agent.conf
 cat >~/.gnupg/scdaemon.conf <<EOF
 pcsc-driver /usr/lib/x86_64-linux-gnu/libpcsclite.so.1
 disable-ccid
